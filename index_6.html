@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phân Tích URL</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;800&display=swap');
+
+    :root {
+      --bg: #0d0f14;
+      --card: #141720;
+      --border: #252a35;
+      --accent: #00e5ff;
+      --accent2: #ff6b35;
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --label-bg: #1a1f2e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .header::before {
+      content: 'URL';
+      position: absolute;
+      top: -20px;
+      right: 0;
+      font-size: 96px;
+      font-weight: 800;
+      color: rgba(0,229,255,0.04);
+      letter-spacing: -4px;
+      pointer-events: none;
+    }
+
+    .tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: var(--accent);
+      color: #000;
+      padding: 3px 10px;
+      border-radius: 2px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      color: #fff;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 400;
+    }
+
+    /* URL Sample */
+    .url-sample {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 18px 24px;
+      margin-bottom: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      word-break: break-all;
+      line-height: 1.8;
+    }
+
+    .url-sample .proto { color: var(--accent2); }
+    .url-sample .domain { color: var(--accent); }
+    .url-sample .path { color: #a78bfa; }
+    .url-sample .query { color: #34d399; }
+    .url-sample .fragment { color: #fbbf24; }
+
+    /* Parts grid */
+    .parts-title {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 16px;
+    }
+
+    .parts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 500px) {
+      .parts-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 28px; }
+    }
+
+    .part-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .part-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--color);
+      border-radius: 10px 0 0 10px;
+    }
+
+    .part-card:hover {
+      border-color: var(--color);
+      transform: translateY(-2px);
+    }
+
+    .part-card[data-part="protocol"] { --color: #ff6b35; }
+    .part-card[data-part="domain"]   { --color: #00e5ff; }
+    .part-card[data-part="path"]     { --color: #a78bfa; }
+    .part-card[data-part="query"]    { --color: #34d399; }
+    .part-card[data-part="fragment"] { --color: #fbbf24; }
+
+    .part-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color);
+      margin-bottom: 8px;
+    }
+
+    .part-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      color: #fff;
+      word-break: break-all;
+    }
+
+    .part-desc {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    /* Fragment card spans full width */
+    .part-card.full {
+      grid-column: 1 / -1;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 36px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="header">
+      <div class="tag">Bài tập HTML</div>
+      <h1>Phân Tích <span>URL</span></h1>
+      <p class="subtitle">Giải mã cấu trúc của một địa chỉ web</p>
+    </div>
+
+    <!-- URL mẫu với màu sắc từng phần -->
+    <div class="url-sample">
+      <span class="proto">https</span>://<span class="domain">example.com</span><span class="path">/products/list</span><span class="query">?page=2</span><span class="fragment">#top</span>
+    </div>
+
+    <p class="parts-title">— Các thành phần</p>
+
+    <div class="parts-grid">
+
+      <div class="part-card" data-part="protocol">
+        <div class="part-label">Protocol</div>
+        <div class="part-value">https://</div>
+        <div class="part-desc">Giao thức truyền tải. <code>https</code> là phiên bản bảo mật của HTTP, mã hóa dữ liệu giữa trình duyệt và máy chủ.</div>
+      </div>
+
+      <div class="part-card" data-part="domain">
+        <div class="part-label">Domain</div>
+        <div class="part-value">example.com</div>
+        <div class="part-desc">Tên miền — địa chỉ của máy chủ web. Trình duyệt dùng DNS để chuyển tên này thành địa chỉ IP.</div>
+      </div>
+
+      <div class="part-card" data-part="path">
+        <div class="part-label">Path</div>
+        <div class="part-value">/products/list</div>
+        <div class="part-desc">Đường dẫn tài nguyên trên máy chủ, phân cấp bằng dấu <code>/</code>, chỉ đến trang hoặc file cụ thể.</div>
+      </div>
+
+      <div class="part-card" data-part="query">
+        <div class="part-label">Query String</div>
+        <div class="part-value">?page=2</div>
+        <div class="part-desc">Tham số truy vấn, bắt đầu bằng <code>?</code>. Nhiều tham số nối nhau bằng <code>&amp;</code>, ví dụ: <code>?page=2&amp;sort=asc</code>.</div>
+      </div>
+
+      <div class="part-card full" data-part="fragment">
+        <div class="part-label">Fragment</div>
+        <div class="part-value">#top</div>
+        <div class="part-desc">Anchor — bắt đầu bằng <code>#</code>, trỏ đến một phần tử có <code>id</code> tương ứng trong trang. Phần này <strong>không</strong> được gửi lên máy chủ, chỉ xử lý phía trình duyệt.</div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      https://example.com/products/list?page=2#top
+    </div>
+
+  </div>
+</body>
+</html>
