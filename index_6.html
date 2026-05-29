@@ -3,250 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phân Tích URL</title>
+  <title>Trang phân tích URL</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;800&display=swap');
-
-    :root {
-      --bg: #0d0f14;
-      --card: #141720;
-      --border: #252a35;
-      --accent: #00e5ff;
-      --accent2: #ff6b35;
-      --text: #e8eaf0;
-      --muted: #6b7280;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: 'Syne', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-    }
-
-    .container { width: 100%; max-width: 780px; }
-
-    .tag {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      background: var(--accent);
-      color: #000;
-      padding: 3px 10px;
-      border-radius: 2px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 14px;
+      font-family: Georgia, serif;
+      background: #0d1117;
+      color: #e6edf3;
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 0 20px;
     }
 
     h1 {
-      font-size: 36px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      color: #fff;
-      margin-bottom: 6px;
+      font-size: 28px;
+      color: #58a6ff;
+      border-bottom: 2px solid #21262d;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
     }
 
-    h1 span { color: var(--accent); }
-
-    .subtitle {
-      color: var(--muted);
+    .url-sample {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: monospace;
       font-size: 15px;
-      margin-bottom: 32px;
-    }
-
-    /* URL display */
-    .url-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: 8px;
-      padding: 16px 22px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 15px;
-      word-break: break-all;
       margin-bottom: 28px;
     }
 
-    .url-box .proto    { color: #ff6b35; }
-    .url-box .domain   { color: #00e5ff; }
-    .url-box .path     { color: #a78bfa; }
-    .url-box .query    { color: #34d399; }
-    .url-box .fragment { color: #fbbf24; }
+    .proto    { color: #ff7b72; }
+    .domain   { color: #79c0ff; }
+    .path     { color: #d2a8ff; }
+    .query    { color: #56d364; }
+    .fragment { color: #e3b341; }
 
-    /* Table */
-    .section-label {
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-family: 'JetBrains Mono', monospace;
-      margin-bottom: 14px;
+    ul {
+      list-style: none;
+      padding: 0;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
+    ul li {
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      font-size: 15px;
     }
 
-    thead tr {
-      background: #1a1f2e;
-    }
+    ul li:nth-child(1) { background: #2a1a1a; border-left: 4px solid #ff7b72; }
+    ul li:nth-child(2) { background: #0d1f2e; border-left: 4px solid #79c0ff; }
+    ul li:nth-child(3) { background: #1e1a2e; border-left: 4px solid #d2a8ff; }
+    ul li:nth-child(4) { background: #0d2218; border-left: 4px solid #56d364; }
+    ul li:nth-child(5) { background: #2a2010; border-left: 4px solid #e3b341; }
 
-    thead th {
-      text-align: left;
-      padding: 12px 18px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-    }
-
-    tbody tr:hover { background: #1a1f2e; }
-
-    tbody td {
-      padding: 14px 18px;
-      vertical-align: top;
-      line-height: 1.6;
-    }
-
-    td.part-name {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    td.part-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      word-break: break-all;
-    }
-
-    td.part-desc {
-      color: #9ca3af;
-      font-size: 13px;
-    }
-
-    td.part-desc code {
-      background: #1e2538;
-      padding: 1px 6px;
-      border-radius: 3px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: #e2e8f0;
-    }
-
-    /* Color dots */
-    .dot {
-      display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
+    ul li strong { margin-right: 6px; }
   </style>
 </head>
 <body>
-<div class="container">
+  <h1>Trang phân tích URL</h1>
 
-  <div class="tag">Phân tích URL</div>
-  <h1>Cấu trúc <span>URL</span></h1>
-  <p class="subtitle">Giải mã từng thành phần của địa chỉ web</p>
+  <div class="url-sample">
+    <span class="proto">https</span>://<span class="domain">example.com</span><span class="path">/products/list</span><span class="query">?page=2</span><span class="fragment">#top</span>
+  </div>
 
-  <!-- URL mẫu được tô màu từng phần -->
-  <div class="url-box" id="urlDisplay"></div>
-
-  <p class="section-label">— Các thành phần</p>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Thành phần</th>
-        <th>Giá trị</th>
-        <th>Mô tả</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-
-</div>
-
-<script>
-  // URL mẫu
-  const sampleURL = "https://example.com/products/list?page=2#top";
-
-  // Parse bằng URL API
-  const parsed = new URL(sampleURL);
-
-  const parts = [
-    {
-      name: "Protocol",
-      color: "#ff6b35",
-      value: parsed.protocol,          // "https:"
-      desc: "Giao thức truyền tải. <code>https</code> là HTTP bảo mật, mã hóa dữ liệu giữa trình duyệt và máy chủ."
-    },
-    {
-      name: "Domain",
-      color: "#00e5ff",
-      value: parsed.hostname,          // "example.com"
-      desc: "Tên miền — địa chỉ của máy chủ. Trình duyệt dùng DNS để chuyển tên này thành địa chỉ IP."
-    },
-    {
-      name: "Path",
-      color: "#a78bfa",
-      value: parsed.pathname,          // "/products/list"
-      desc: "Đường dẫn tài nguyên trên máy chủ, phân cấp bằng dấu <code>/</code>."
-    },
-    {
-      name: "Query",
-      color: "#34d399",
-      value: parsed.search,            // "?page=2"
-      desc: "Tham số truy vấn, bắt đầu bằng <code>?</code>. Nhiều tham số nối nhau bằng <code>&amp;</code>."
-    },
-    {
-      name: "Fragment",
-      color: "#fbbf24",
-      value: parsed.hash,              // "#top"
-      desc: "Anchor — trỏ đến phần tử có <code>id</code> tương ứng trong trang. Không gửi lên máy chủ, chỉ xử lý ở trình duyệt."
-    }
-  ];
-
-  // Render URL có màu
-  document.getElementById("urlDisplay").innerHTML =
-    `<span class="proto">${parsed.protocol}</span>//` +
-    `<span class="domain">${parsed.hostname}</span>` +
-    `<span class="path">${parsed.pathname}</span>` +
-    `<span class="query">${parsed.search}</span>` +
-    `<span class="fragment">${parsed.hash}</span>`;
-
-  // Render bảng
-  const tbody = document.getElementById("tableBody");
-  parts.forEach(p => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="part-name">
-        <span class="dot" style="background:${p.color}"></span>${p.name}
-      </td>
-      <td class="part-value" style="color:${p.color}">${p.value || '<span style="color:#4b5563">—</span>'}</td>
-      <td class="part-desc">${p.desc}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-</script>
+  <ul>
+    <li><strong>Protocol:</strong> <span class="proto">https</span></li>
+    <li><strong>Domain:</strong> <span class="domain">example.com</span></li>
+    <li><strong>Path:</strong> <span class="path">/products/list</span></li>
+    <li><strong>Query:</strong> <span class="query">page=2</span></li>
+    <li><strong>Fragment:</strong> <span class="fragment">top</span></li>
+  </ul>
 </body>
 </html>
